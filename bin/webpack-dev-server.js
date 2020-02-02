@@ -38,8 +38,10 @@ if (importLocal(__filename)) {
 }
 
 try {
+  // 此方法只是测试一下 webpack-cli 是否安装了，并不会加载该模块
   require.resolve('webpack-cli');
 } catch (err) {
+  // 没有安装则打印文字提示安装
   console.error('The CLI moved into a separate package: webpack-cli');
   console.error(
     "Please install 'webpack-cli' in addition to webpack itself to use the CLI"
@@ -50,6 +52,7 @@ try {
   process.exitCode = 1;
 }
 
+// 显示用法
 yargs.usage(
   `${getVersions()}\nUsage:  https://webpack.js.org/configuration/dev-server/`
 );
@@ -87,12 +90,18 @@ const config = require(convertArgvPath)(yargs, argv, {
   outputFilename: '/bundle.js',
 });
 
+/**
+ * 启动 dev server
+ * @param {object} config webpack 配置
+ * @param {object} options webpack-dev-server 参数
+ */
 function startDevServer(config, options) {
   const log = createLogger(options);
 
   let compiler;
 
   try {
+    // 1. 创建 compiler 实例
     compiler = webpack(config);
   } catch (err) {
     if (err instanceof webpack.WebpackOptionsValidationError) {
@@ -105,6 +114,7 @@ function startDevServer(config, options) {
   }
 
   try {
+    // 2. 启动一个 Server
     server = new Server(compiler, options, log);
     serverData.server = server;
   } catch (err) {
@@ -164,6 +174,51 @@ function startDevServer(config, options) {
   }
 }
 
+// config 样例：
+// {
+//   "mode": "development",
+//   "context": "/Users/solar/Desktop/project/webpack-dev-server/test/fixtures/cli",
+//   "entry": "./foo.js",
+//   "plugins": [
+//       {}
+//   ]
+// }
+//
+// argv 样例：
+// {
+//   "_": [],
+//   "cache": null,
+//   "bail": null,
+//   "profile": null,
+//   "color": false,
+//   "colors": false,
+//   "liveReload": true,
+//   "live-reload": true,
+//   "serveIndex": true,
+//   "serve-index": true,
+//   "inline": true,
+//   "info": true,
+//   "config": "/Users/solar/Desktop/project/webpack-dev-server/test/fixtures/cli/webpack.config.js",
+//   "info-verbosity": "info",
+//   "infoVerbosity": "info",
+//   "client-log-level": "info",
+//   "clientLogLevel": "info",
+//   "host": "localhost",
+//   "$0": "bin/webpack-dev-server.js"
+// }
 processOptions(config, argv, (config, options) => {
+  // 处理完 config 和 argv 后的 config, options
+  // 如果之前的 config 是上述 config 样例，那么处理后的 config 也不会变，所以此处不举例了
+  // argv 则会进行整合、过滤处理，上例 argv 最终产生的 options 如下：
+  // {
+  //     "host": "localhost",
+  //     "publicPath": "/",
+  //     "clientLogLevel": "info",
+  //     "stats": {
+  //         "cached": false,
+  //         "cachedAssets": false
+  //     },
+  //     "port": 8080
+  // }
   startDevServer(config, options);
 });
