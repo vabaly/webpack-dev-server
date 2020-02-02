@@ -26,9 +26,11 @@ const serverData = {
 // we can update this server property later, and setupExitSignals will be able to
 // recognize that the server has been instantiated, because we will set
 // serverData.server to the new server object.
+// 监听终止进程的事件，以便成功退出服务器子进程
 setupExitSignals(serverData);
 
 // Prefer the local installation of webpack-dev-server
+// 如果本地装了 webpack-dev-server，则使用本地安装包
 if (importLocal(__filename)) {
   debug('Using local install of webpack-dev-server');
 

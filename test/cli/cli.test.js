@@ -96,6 +96,8 @@ describe('CLI', () => {
       .catch(done);
   });
 
+  // webpack dev server cli 什么参数也不加的测试
+  // 【Start】Jest Debug 调试阅读源码入口
   it('unspecified port', (done) => {
     testBin('')
       .then((output) => {
