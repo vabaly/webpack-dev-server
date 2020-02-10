@@ -13,7 +13,11 @@ function reloadApp(
   }
   if (hot) {
     log.info('[WDS] App hot update...');
+    // 设计理念：
+    // 为了更好的维护代码，以及职责划分的更明确，
+    // 即 websocket 仅仅用于客户端（浏览器）和服务端进行通信，而真正做事情的活还是交回给了 webpack。
     const hotEmitter = require('webpack/hot/emitter');
+    // hotEmitter.on 可以看 webpack/hot/dev-server.js
     hotEmitter.emit('webpackHotUpdate', currentHash);
     if (typeof self !== 'undefined' && self.window) {
       // broadcast update to window

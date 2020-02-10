@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * 打包进浏览器的 JS 源码，客户端代码
+ */
+
 /* global __resourceQuery WorkerGlobalScope self */
 /* eslint prefer-destructuring: off */
 const stripAnsi = require('strip-ansi');
@@ -25,6 +29,7 @@ const options = {
 };
 const socketUrl = createSocketUrl(__resourceQuery);
 
+// 页面关闭或刷新时触发
 self.addEventListener('beforeunload', () => {
   status.isUnloading = true;
 });
@@ -51,6 +56,7 @@ const onSocketMessage = {
     }
     sendMessage('Invalid');
   },
+  // 【重要的事件函数】服务器发送 hash 来更新浏览器中的 hash
   hash(hash) {
     status.currentHash = hash;
   },
@@ -90,6 +96,7 @@ const onSocketMessage = {
     }
     sendMessage('Progress', data);
   },
+  // 【重要的事件函数】热更新检查
   ok() {
     sendMessage('Ok');
     if (options.useWarningOverlay || options.useErrorOverlay) {
@@ -98,6 +105,7 @@ const onSocketMessage = {
     if (options.initial) {
       return (options.initial = false);
     } // eslint-disable-line no-return-assign
+    // 开始热更新检查
     reloadApp(options, status);
   },
   'content-changed': function contentChanged() {
@@ -141,4 +149,7 @@ const onSocketMessage = {
   },
 };
 
+// 【Todo】暂时还没看 socket 代码，只知道它有以下的功能：
+// 把 onSocketMessage 中的事件函数绑定到 Websocket.onMessage 事件中
+// 通过服务器传递的消息对象 data 中的 type 属性来区分调用什么事件函数
 socket(socketUrl, onSocketMessage);
